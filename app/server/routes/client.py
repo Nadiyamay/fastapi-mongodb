@@ -37,3 +37,29 @@ async def get_client_data(id):
     if client:
         return ResponseModel(client, "Client data retrieved successfully")
     return ErrorResponseModel("An error occurred.", 404, "Client doesn't exist.")
+
+@router.put("/{id}")
+async def update_client_data(id: str, req: UpdateClientModel = Body(...)):
+    req = {k: v for k, v in req.dict().items() if v is not None}
+    updated_client = await update_client(id, req)
+    if updated_client:
+        return ResponseModel(
+            "Client with ID: {} name update is successful".format(id),
+            "Client name updated successfully",
+        )
+    return ErrorResponseModel(
+        "An error occurred",
+        404,
+        "There was an error updating the client data.",
+    )
+
+@router.delete("/{id}", response_description="Client data deleted from the database")
+async def delete_client_data(id: str):
+    deleted_client = await delete_client(id)
+    if deleted_client:
+        return ResponseModel(
+            "Client with ID: {} removed".format(id), "Client deleted successfully"
+        )
+    return ErrorResponseModel(
+        "An error occurred", 404, "Client with id {0} doesn't exist".format(id)
+    )
