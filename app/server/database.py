@@ -15,26 +15,26 @@ def client_helper(client) -> dict:
         "fullname": client["fullname"],
         "email": client["email"],
         "service": client["service"],
-        "year_of_birth": student["year_of_birth"],
-        "rate": student["rate"],
+        "year_of_birth": client["year_of_birth"],
+        "rate": client["rate"],
     }
 
 
 async def retrieve_clients():
     clients = []
-    async for client in client_collection.find():
+    async for client in clients_collection.find():
         clients.append(client_helper(client))
     return clients
 
 
 async def add_client(client_data: dict) -> dict:
-    client = await client_collection.insert_one(client_data)
-    new_client = await client_collection.find_one({"_id": client.inserted_id})
+    client = await clients_collection.insert_one(client_data)
+    new_client = await clients_collection.find_one({"_id": client.inserted_id})
     return client_helper(new_client)
 
 
 async def retrieve_client(id: str) -> dict:
-    client = await client_collection.find_one({"_id": ObjectId(id)})
+    client = await clients_collection.find_one({"_id": ObjectId(id)})
     if client:
         return client_helper(client)
 
@@ -42,9 +42,9 @@ async def retrieve_client(id: str) -> dict:
 async def update_client(id: str, data: dict):
     if len(data) < 1:
         return False
-    client = await client_collection.find_one({"_id": ObjectId(id)})
+    client = await clients_collection.find_one({"_id": ObjectId(id)})
     if client:
-        updated_client = await client_collection.update_one(
+        updated_client = await clients_collection.update_one(
             {"_id": ObjectId(id)}, {"$set": data}
         )
         if updated_client:
@@ -53,7 +53,7 @@ async def update_client(id: str, data: dict):
 
 
 async def delete_client(id: str):
-    client = await client_collection.find_one({"_id": ObjectId(id)})
+    client = await clients_collection.find_one({"_id": ObjectId(id)})
     if client:
-        await client_collection.delete_one({"_id": ObjectId(id)})
+        await clients_collection.delete_one({"_id": ObjectId(id)})
         return True
